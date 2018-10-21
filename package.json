@@ -1,0 +1,11 @@
+{
+  "name": "nodejs-app-poc",
+  "version": "1.0.0",
+  "description": "nodejs app starter",
+  "main": "index_es5.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "",
+  "license": "ISC"
+}

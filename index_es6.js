@@ -1,7 +1,9 @@
 // enforce use strict globally
 'use strict';
 
-const test1 = (() => {
+let test;
+
+test = (() => {
   const add = (x) => {
     let total = 0;
     return () => {
@@ -14,9 +16,9 @@ const test1 = (() => {
   console.log(add(2).call());
   console.log(add(3).call());
 });
-test1.call();
+test.call();
 
-const test2 = (() => {
+test = (() => {
   const add = ((x) => {
     let total = 0;
     total += (() => {
@@ -28,9 +30,9 @@ const test2 = (() => {
   console.log(add(1));
   console.log(add(2));
 });
-test2.call();
+test.call();
 
-const test3 = (() => {
+test = (() => {
   const add = (() => {
     let total = 0;
     return ((x) => {
@@ -43,18 +45,24 @@ const test3 = (() => {
   console.log(add.call(null,2));
   console.log(add(3));
 });
-test3.call();
+test.call();
 
-const test4 = (() => {
+test = (() => {
   let math = {
     total: 0,
     add: (x) => {
       math.total += x;
+      return math.total;
+    },
+    minus: (x) => {
+      math.total -= x;
       return math.total;
     }
   };
   console.log(math.add(1));
   console.log(math.add(2));
   console.log(math.add(3));
+  console.log(math.minus(3));
+  console.log(math.minus(2));
 });
-test4.call();
+test.call();
