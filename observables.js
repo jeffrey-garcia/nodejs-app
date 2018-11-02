@@ -1,3 +1,6 @@
+// enforce use strict globally
+'use strict';
+
 // Import all core functionality
 const Rx = require('rxjs/Rx');
 

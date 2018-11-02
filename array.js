@@ -9,7 +9,7 @@ test = (function() {
   array.sort();
   console.log(array);
 });
-test.call();
+// test.call();
 
 test = (function() {
   // defines the person object
@@ -22,7 +22,9 @@ test = (function() {
   let p1 = Object.assign(Object.create(Person), {name:'J', age:12, gender:'M'});
   let p2 = Object.assign(Object.create({}), p1, {name:'A', age:37}); // mixin
   // console.log(p1);
+  // console.log(Object.getPrototypeOf(p1));
   // console.log(p2);
+  // console.log(Object.getPrototypeOf(p2));
 
   let personFactory = (function() {
     return (function(_name, _age) {
@@ -32,9 +34,6 @@ test = (function() {
 
   let p3 = personFactory('O',28);
   // console.log(p3);
-
-  // console.log(Object.getPrototypeOf(p1));
-  // console.log(Object.getPrototypeOf(p2));
   // console.log(p1 == Object.getPrototypeOf(p2));
 
   // sorting object array
@@ -79,14 +78,43 @@ test = (function() {
 
   _array = array.map(item => {
     return item*2
-  })
+  });
   console.log(_array);
 
   let sum = array.reduce((total, current) => {
     return total + current;
-  })
+  });
   console.log(sum);
-
-
 });
-test.call();
+// test.call();
+
+test = (function() {
+  let array = [];
+  array = [5,4,7,1,3];
+
+  let _map;
+
+  _map = new Map();
+  array.forEach(item => {
+    _map.set(item, item);
+  });
+  console.log(_map);
+
+  let _array;
+  _array = Array.from(_map.values());
+  console.log(_array);
+
+  _map.clear();
+  _array = _array.concat([3,1,6,5,3]);
+  console.log(_array);
+  _array.forEach(item => {
+    var count = _map.get(item);
+    if (count == null) {
+      _map.set(item, 1);
+    } else {
+      _map.set(item, ++count);
+    }
+  });
+  console.log(_map);
+});
+// test.call();
