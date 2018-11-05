@@ -18,7 +18,7 @@ let test;
 test = (function() {
   let promise = new Promise(function(resolve, reject) {
     // do the async operation here
-    let result = dummyRestApi(1);
+    let result = dummyRestApiObservable(1).toPromise();
 
     if (result) { // result is successful
       resolve(result);
@@ -51,7 +51,7 @@ test = (function() {
 test = (function() {
   Rx.Observable.from([1,2,3,4])
     .map(i => dummyRestApiObservable(i))
-    .mergeMap(i => dummyRestApiObservable(8))
+    // .mergeMap(i => dummyRestApiObservable(8))
     .subscribe(
       data => {
         console.log("rest result: " + data)
@@ -65,7 +65,7 @@ test = (function() {
       }
     );
 });
-test.call();
+// test.call();
 
 test = (function() {
   Rx.Observable.from([1,2,3,4])
@@ -82,5 +82,22 @@ test = (function() {
         console.log("finished");
       }
     );
+});
+// test.call();
+
+test = (function() {
+  Rx.Observable.forkJoin(dummyRestApiObservable(1),dummyRestApiObservable(2))
+  .subscribe(
+    data => {
+      console.log("rest result: " + data)
+    },
+    err => {
+      console.log(err);
+    },
+    () => {
+      // default work when observable complete
+      console.log("finished");
+    }
+  );
 });
 // test.call();
