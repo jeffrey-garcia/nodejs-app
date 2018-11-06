@@ -6,6 +6,9 @@ const Rx = require('rxjs/Rx');
 
 const dummyRestApi = (function(i) {
   console.log("response data for " + i);
+  if (i == 4) {
+    throw new Error("An error has occurred!");
+  }
   return i;
 });
 
@@ -18,7 +21,7 @@ let test;
 test = (function() {
   let promise = new Promise(function(resolve, reject) {
     // do the async operation here
-    let result = dummyRestApiObservable(1).toPromise();
+    let result = dummyRestApiObservable(2).toPromise();
 
     if (result) { // result is successful
       resolve(result);
@@ -26,19 +29,21 @@ test = (function() {
       reject(Error("error"));
     }
   });
-  promise.then(function(data) {
-    console.log(data);
+  promise.then(function(result) {
+    console.log("rest result: " + result)
+  }).catch(function(err) {
+    console.log("error: " + err.message);
   });
 });
 // test.call();
 
 test = (function() {
-  dummyRestApiObservable(1).subscribe(
+  dummyRestApiObservable(2).subscribe(
     (result) => {
-      console.log("rest result: " + result)
+      console.log("rest result: " + result);
     },
     (err) => {
-      console.log(err);
+      console.log("error: " + err.message);
     },
     () => {
       // default work when observable complete
@@ -46,12 +51,14 @@ test = (function() {
     }
   );
 });
-// test.call();
+test.call();
 
 test = (function() {
   // execute commands upon the observable stream and execute them in parallel
   // and combine their results to an array
   // note that order of the response data WILL be preserved
+  // if error occurs in any of the chained command, the error WILL be handled by the subscriber,
+  // all the previous completed output will be lost
   Rx.Observable.from([4,2,3,1])
     .map(i => dummyRestApiObservable(i))
     .combineAll()
@@ -60,7 +67,7 @@ test = (function() {
         console.log("rest result: " + result)
       },
       (err) => {
-        console.log(err);
+        console.log("error: " + err.message);
       },
       () => {
         // default work when observable complete
@@ -76,13 +83,15 @@ test = (function() {
 
   // execute multiple commands in parallel and combine their results to an array
   // note that order of the response data WILL be preserved
+  // if error occurs in any of the command, the error will NOT be handled by the subscriber,
+  // all the previous completed output will be lost
   Rx.Observable.forkJoin(input1,input2)
   .subscribe(
     (result) => {
       console.log("rest result: " + result)
     },
     (err) => {
-      console.log(err);
+      console.log("error: " + err);
     },
     () => {
       // default work when observable complete
@@ -98,13 +107,15 @@ test = (function() {
 
   // execute multiple commands in parallel and combine their results to an array
   // note that order of the response data will NOT be preserved
+  // if error occurs in any of the command, the error will NOT be handled by the subscriber,
+  // all the previous completed output will be lost
   Rx.Observable.combineLatest(input2, input1)
   .subscribe(
     (result) => {
       console.log("rest result: " + result);
     },
     (err) => {
-      console.log(err);
+      console.log("error: " + err.message);
     },
     () => {
       // default work when observable complete
@@ -117,6 +128,8 @@ test = (function() {
 test = (function() {
   // chain the commands after the observable stream and execute them sequentially
   // only the response data of the last executed command will be returned
+  // if error occurs in any of the chained command, the error WILL be handled by the subscriber,
+  // all the previous completed output will be lost
   Rx.Observable.from([1])
     .mergeMap(i => dummyRestApiObservable(i))
     .mergeMap(j => dummyRestApiObservable(j)) // the input of this command depends on the result of previous
@@ -125,7 +138,7 @@ test = (function() {
         console.log("rest result: " + result);
       },
       (err) => {
-        console.log(err);
+        console.log("error: " + err.message);
       },
       () => {
         // default work when observable complete
