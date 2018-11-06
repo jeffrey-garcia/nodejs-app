@@ -5,12 +5,12 @@
 const Rx = require('rxjs/Rx');
 
 const dummyRestApi = (function(i) {
-  console.log(i);
-  return "response data for " + i;
+  console.log("response data for " + i);
+  return i;
 });
 
 const dummyRestApiObservable = (function(i) {
-  return Rx.Observable.of(dummyRestApi(i)).delay(2000);
+  return Rx.Observable.of(dummyRestApi(i*2)).delay(i*1000);
 });
 
 let test;
@@ -34,10 +34,10 @@ test = (function() {
 
 test = (function() {
   dummyRestApiObservable(1).subscribe(
-    data => {
-      console.log("rest result: " + data)
+    (result) => {
+      console.log("rest result: " + result)
     },
-    err => {
+    (err) => {
       console.log(err);
     },
     () => {
@@ -49,14 +49,17 @@ test = (function() {
 // test.call();
 
 test = (function() {
-  Rx.Observable.from([1,2,3,4])
+  // execute commands upon the observable stream and execute them in parallel
+  // and combine their results to an array
+  // note that order of the response data WILL be preserved
+  Rx.Observable.from([4,2,3,1])
     .map(i => dummyRestApiObservable(i))
-    // .mergeMap(i => dummyRestApiObservable(8))
+    .combineAll()
     .subscribe(
-      data => {
-        console.log("rest result: " + data)
+      (result) => {
+        console.log("rest result: " + result)
       },
-      err => {
+      (err) => {
         console.log(err);
       },
       () => {
@@ -68,30 +71,17 @@ test = (function() {
 // test.call();
 
 test = (function() {
-  Rx.Observable.from([1,2,3,4])
-    .mergeMap(i => dummyRestApiObservable(i))
-    .subscribe(
-      data => {
-        console.log("rest result: " + data)
-      },
-      err => {
-        console.log(err);
-      },
-      () => {
-        // default work when observable complete
-        console.log("finished");
-      }
-    );
-});
-// test.call();
+  const input1 = dummyRestApiObservable(2);
+  const input2 = dummyRestApiObservable(1);
 
-test = (function() {
-  Rx.Observable.forkJoin(dummyRestApiObservable(1),dummyRestApiObservable(2))
+  // execute multiple commands in parallel and combine their results to an array
+  // note that order of the response data WILL be preserved
+  Rx.Observable.forkJoin(input1,input2)
   .subscribe(
-    data => {
-      console.log("rest result: " + data)
+    (result) => {
+      console.log("rest result: " + result)
     },
-    err => {
+    (err) => {
       console.log(err);
     },
     () => {
@@ -100,4 +90,47 @@ test = (function() {
     }
   );
 });
+// test.call();
+
+test = (function() {
+  const input1 = dummyRestApiObservable(1);
+  const input2 = dummyRestApiObservable(2);
+
+  // execute multiple commands in parallel and combine their results to an array
+  // note that order of the response data will NOT be preserved
+  Rx.Observable.combineLatest(input2, input1)
+  .subscribe(
+    (result) => {
+      console.log("rest result: " + result);
+    },
+    (err) => {
+      console.log(err);
+    },
+    () => {
+      // default work when observable complete
+      console.log("finished");
+    }
+  );
+});
+// test.call();
+
+test = (function() {
+  // chain the commands after the observable stream and execute them sequentially
+  // only the response data of the last executed command will be returned
+  Rx.Observable.from([1])
+    .mergeMap(i => dummyRestApiObservable(i))
+    .mergeMap(j => dummyRestApiObservable(j)) // the input of this command depends on the result of previous
+    .subscribe(
+      (result) => {
+        console.log("rest result: " + result);
+      },
+      (err) => {
+        console.log(err);
+      },
+      () => {
+        // default work when observable complete
+        console.log("finished");
+      }
+    );
+})
 // test.call();
