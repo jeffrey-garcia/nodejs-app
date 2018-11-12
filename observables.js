@@ -51,7 +51,7 @@ test = (function() {
     }
   );
 });
-test.call();
+// test.call();
 
 test = (function() {
   // execute commands upon the observable stream and execute them in parallel
@@ -91,7 +91,7 @@ test = (function() {
       console.log("rest result: " + result)
     },
     (err) => {
-      console.log("error: " + err);
+      console.log("error: " + err.message);
     },
     () => {
       // default work when observable complete
@@ -99,7 +99,7 @@ test = (function() {
     }
   );
 });
-// test.call();
+test.call();
 
 test = (function() {
   const input1 = dummyRestApiObservable(1);

@@ -58,7 +58,7 @@ test = (function() {
   });
   console.log(array);
 });
-test.call();
+// test.call();
 
 test = (function() {
   let array = [];
@@ -87,6 +87,21 @@ test = (function() {
   console.log(sum);
 });
 // test.call();
+
+test = (function() {
+  let array = [];
+  array.push(1);
+  array.push(5);
+  array.push(3);
+  array.push(5);
+  array.push(7);
+  console.log(array);
+  console.log(array[array.length-1]);
+
+  array.pop();
+  console.log(array);
+});
+test.call();
 
 test = (function() {
   let array = [];
