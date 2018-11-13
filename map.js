@@ -37,4 +37,21 @@ test = (function() {
   console.log("original map: " + _map.size);
   console.log("new map: " + _mapNew.size);
 });
+// test.call();
+
+test = (function() {
+  let map = new Map();
+  map.set(1, Object.assign({},{id:1}));
+  map.set(2, Object.assign({},{id:2}));
+
+  let array = [...map.entries()];
+  // console.log(array);
+
+  let _map = new Map(array);
+  // console.log(_map);
+  _map.set(1, Object.assign({},{id:"1"}));
+
+  console.log(_map);
+  console.log(map);
+});
 test.call();
