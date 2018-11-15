@@ -99,7 +99,7 @@ test = (function() {
     }
   );
 });
-test.call();
+// test.call();
 
 test = (function() {
   const input1 = dummyRestApiObservable(1);
@@ -147,3 +147,25 @@ test = (function() {
     );
 })
 // test.call();
+
+test = (function() {
+  var state = new Rx.Subject();
+  var $stateObserver = state.asObservable();
+
+  $stateObserver.subscribe(
+    (result) => {
+      console.log("rest result: " + result);
+    },
+    (err) => {
+      console.log("error: " + err.message);
+    },
+    () => {
+      // default work when observable complete
+      console.log("finished");
+    }
+  )
+
+  state.next(1);
+  state.next(2);
+})
+test.call();
