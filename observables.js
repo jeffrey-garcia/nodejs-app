@@ -145,7 +145,7 @@ test = (function() {
         console.log("finished");
       }
     );
-})
+});
 // test.call();
 
 test = (function() {
@@ -167,5 +167,142 @@ test = (function() {
 
   state.next(1);
   state.next(2);
-})
+});
+// test.call();
+
+test = (function() {
+  var state = new Rx.BehaviorSubject(null);
+  var $stateObserver = state.asObservable();
+
+  $stateObserver.subscribe(
+    (result) => {
+      if (result) {
+        console.log("rest result: " + result);
+      }
+    },
+    (err) => {
+      console.log("error: " + err.message);
+    },
+    () => {
+      // default work when observable complete
+      console.log("finished");
+    }
+  )
+
+  state.next(1);
+  state.next(2);
+
+  console.log("current state value: " + state.getValue());
+});
+// test.call();
+
+test = (function() {
+
+  let digitalLeadComponent = {
+    getStore: function() {
+      let store = {
+        name: "digitalLeadStore"
+      };
+      return store;
+    }
+  };
+  //console.log(`store name: ${digitalLeadComponent.getStore().name}`);
+
+  let loadModule = (function() {
+    return Rx.Observable.create(
+      (observer) => {
+        let component = Object.assign({}, digitalLeadComponent);
+        observer.next(component);
+        observer.complete();
+      }
+    ).delay(2000); // simulate hard-delay 2s
+  });
+  // loadModule().subscribe(
+  //   (component) => {
+  //     console.log(`store name: ${component.getStore().name}`);
+  //   }
+  // );
+
+  let loadComponentFactory = (function() {
+    let $component = new Rx.BehaviorSubject(null);
+
+    console.log("initialization in progress ...");
+    loadModule().subscribe(
+      (component) => {
+        console.log("initialization completed successfully");
+        $component.next(component);
+      },
+      (error) => {
+        console.log("error");
+      },
+      () => {}
+    )
+
+    // let promise = new Promise(function(resolve, reject) {
+    //   console.log("initialization in progress ...");
+    //   // do the async operation here
+    //   let component = loadModule().toPromise();
+    //
+    //   if (component) { // result is successful
+    //     resolve(component);
+    //   } else {
+    //     reject(Error("error"));
+    //   }
+    // });
+    // promise.then(function(component) {
+    //   console.log("initialization completed successfully");
+    //   $component.next(component);
+    // }).catch(function(err) {
+    //   console.log("error: " + err.message);
+    // });
+
+    // return (function(i) {
+    //   console.log(`call: ${i}`);
+    //   let getComponent = (function() {
+    //     if ($component.getValue() == null) {
+    //       setTimeout(() => getComponent(), 100);
+    //     }
+    //   });
+    //   getComponent();
+    //
+    //   console.log(`return: ${i}`);
+    //   return $component.getValue();
+    // });
+
+    return (function(callerId) {
+      console.log(`calling from: ${callerId}`);
+      return Rx.Observable.create(
+        (observer) => {
+          $component.subscribe(
+            (component) => {
+              if (component != null) {
+                // emit only if component value has been initialized
+                observer.next(component);
+                observer.complete();
+              }
+            }
+          )
+        }
+      );
+    });
+
+  })();
+
+  loadComponentFactory(1).subscribe(
+    (component) => {
+      console.log(component.getStore());
+    }
+  );
+  loadComponentFactory(2).subscribe(
+    (component) => {
+      console.log(component.getStore());
+    }
+  );
+  loadComponentFactory(3).subscribe(
+    (component) => {
+      console.log(component.getStore());
+    }
+  );
+
+});
 test.call();

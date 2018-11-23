@@ -20,7 +20,7 @@ test = (function() {
   }
   console.log("iterated over sequence of size: " +  _map.size);
 });
-// test.call();
+test.call();
 
 test = (function() {
   let array = [];
@@ -45,7 +45,7 @@ test = (function() {
   map.set(2, Object.assign({},{id:2}));
 
   let array = [...map.entries()];
-  // console.log(array);
+  console.log(array);
 
   let _map = new Map(array);
   // console.log(_map);
@@ -54,4 +54,54 @@ test = (function() {
   console.log(_map);
   console.log(map);
 });
-test.call();
+// test.call();
+
+test = (function() {
+  let lead1 = Object.assign({},{id:'1',name:'test1'});
+  let lead2 = Object.assign({},{id:'2',name:'test2'});
+
+  let map = new Map();
+  map.set(lead1.id, lead1);
+  map.set(lead2.id, lead2);
+
+  let jsonString = JSON.stringify([...map.entries()]);
+  console.log(jsonString);
+
+  let arr = JSON.parse(jsonString);
+  let _map = new Map(arr);
+  console.log(_map.size);
+});
+// test.call();
+
+test = (function() {
+  let lead1 = Object.assign({},{id:1,name:'test1'});
+  let lead2 = Object.assign({},{id:2,name:'test2'});
+
+  let arr = [];
+  arr.push(lead1);
+  arr.push(lead2);
+
+  let jsonString = JSON.stringify(arr);
+  console.log(jsonString);
+
+  let _arr = JSON.parse(jsonString);
+  console.log(_arr.length);
+});
+// test.call();
+
+test = (function() {
+  let jsonString = "{\"1\":{\"id\":1,\"name\":\"test1\"}}";
+  let obj = JSON.parse(jsonString);
+  console.log(Object.entries(obj));
+
+  let map = new Map(Object.entries(obj));
+
+  let iterator = map.values();
+  var result = iterator.next();
+  while(!result.done) {
+    console.log(result.value);
+    result = iterator.next();
+  }
+  console.log("iterated over sequence of size: " +  map.size);
+});
+// test.call();
