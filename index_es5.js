@@ -23,7 +23,7 @@ test = (function() {
   console.log(add(2).call()); // execute the outer anonymous function, then use call() to execute the inner anonymous function's expression
   console.log(add(3).call()); // execute the outer anonymous function, then use call() to execute the inner anonymous function's expression
 });
-test.call();
+// test.call();
 
 test = (function() {
   var add = function() {
@@ -42,7 +42,7 @@ test = (function() {
   console.log(_add(2)); // since _add is now a reference to the inner anonymous, we can also directly invoke it and pass the parameter
   console.log(_add.call(null,3));
 });
-test.call();
+// test.call();
 
 test = (function() {
   /**
@@ -61,7 +61,7 @@ test = (function() {
   console.log(add(1)); // execute the outer anonymous function, which invoke the inner anonymous function and return the result
   console.log(add(2)); // execute the outer anonymous function, which invoke the inner anonymous function and return the result
 });
-test.call();
+// test.call();
 
 test = (function() {
   /**
@@ -80,7 +80,7 @@ test = (function() {
   console.log(add.call(null,2)); // execute the function's expression of the inner anonymous function, and return its exection result
   console.log(add(3)); // execute the function's expression of the inner anonymous function, and return its exection result
 });
-test.call();
+// test.call();
 
 test = (function() {
   /**
@@ -104,5 +104,23 @@ test = (function() {
   console.log(math.add.call(math,3)); // execute the anonymous function's expression associated with math's add property
   console.log(math.minus(3));
   console.log(math.minus.call(math,2));
+});
+// test.call();
+
+test = (function() {
+
+  let Factory = {
+    total: 0,
+    create: function(initialValue) {
+      this.total = initialValue;
+      return this;
+    },
+    getTotal: function() {
+      return this.total;
+    }
+  }
+
+  console.log(Factory.create(999).getTotal());
+
 });
 test.call();

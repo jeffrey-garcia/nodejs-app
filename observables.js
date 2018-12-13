@@ -6,14 +6,15 @@ const Rx = require('rxjs/Rx');
 
 const dummyRestApi = (function(i) {
   console.log("response data for " + i);
-  if (i == 4) {
-    throw new Error("An error has occurred!");
-  }
   return i;
 });
 
 const dummyRestApiObservable = (function(i) {
-  return Rx.Observable.of(dummyRestApi(i*2)).delay(i*1000);
+  if (i <= 0) {
+    return Rx.Observable.throwError("An error has occurred!");
+  } else {
+    return Rx.Observable.of(dummyRestApi(i*2)).delay(i*1000);
+  }
 });
 
 let test;
@@ -38,19 +39,83 @@ test = (function() {
 // test.call();
 
 test = (function() {
-  dummyRestApiObservable(2).subscribe(
+  dummyRestApiObservable(-1).subscribe(
     (result) => {
       console.log("rest result: " + result);
     },
-    (err) => {
-      console.log("error: " + err.message);
+    (error) => {
+      console.log("error: " + error);
     },
     () => {
-      // default work when observable complete
+      // only prints when no error is thrown
       console.log("finished");
     }
   );
 });
+// test.call();
+
+test = (function() {
+  dummyRestApiObservable(2)
+  .mergeMap(response => dummyRestApiObservable(1)) // only executes when the command prior succeeds
+  .subscribe(
+    (respone) => {
+      console.log(`onNext: ${respone}`);
+    },
+    (error) => {
+      console.log(`onError: ${error}`);
+    },
+    () => {
+      console.log(`onCompleted`);
+    }
+  );
+});
+// test.call();
+
+test = (function() {
+  let subscriber = Rx.Observable.create(
+    (observer) => {
+      dummyRestApiObservable(-1)
+      .finally(
+        () => {
+          dummyRestApiObservable(1).subscribe(
+            (response) => {
+              observer.next(response);
+              observer.complete();
+            },
+            (error) => {
+              observer.error(error);
+              observer.complete();
+            }
+          );
+        }
+      )
+      .subscribe(
+        (respone) => {
+          console.log(`test-1 onNext: ${respone}`);
+        },
+        (error) => {
+          console.log(`test-1 onError: ${error}`);
+        },
+        () => {
+          console.log(`test-1 onCompleted`);
+        }
+      );
+    }
+  );
+
+  subscriber.subscribe(
+    (respone) => {
+      console.log(`test-2 onNext: ${respone}`);
+    },
+    (error) => {
+      console.log(`test-2 onError: ${error}`);
+    },
+    () => {
+      // only prints when no error is thrown
+      console.log(`test-2 onCompleted`);
+    }
+  );
+})
 // test.call();
 
 test = (function() {
@@ -66,16 +131,36 @@ test = (function() {
       (result) => {
         console.log("rest result: " + result)
       },
-      (err) => {
-        console.log("error: " + err.message);
+      (error) => {
+        console.log("error: " + error);
       },
       () => {
-        // default work when observable complete
+        // only prints when no error is thrown
         console.log("finished");
       }
     );
 });
 // test.call();
+
+test = (function() {
+  dummyRestApiObservable(0).concatMap(
+    (response) => {
+      return dummyRestApiObservable(2);
+    }
+  ).subscribe(
+    (result) => {
+      console.log("rest result: " + result)
+    },
+    (error) => {
+      console.log("error: " + error);
+    },
+    () => {
+      // only prints when no error is thrown
+      console.log("finished");
+    }
+  )
+});
+test.call();
 
 test = (function() {
   const input1 = dummyRestApiObservable(2);
@@ -90,11 +175,11 @@ test = (function() {
     (result) => {
       console.log("rest result: " + result)
     },
-    (err) => {
-      console.log("error: " + err.message);
+    (error) => {
+      console.log("error: " + error);
     },
     () => {
-      // default work when observable complete
+      // only prints when no error is thrown
       console.log("finished");
     }
   );
@@ -114,11 +199,11 @@ test = (function() {
     (result) => {
       console.log("rest result: " + result);
     },
-    (err) => {
-      console.log("error: " + err.message);
+    (error) => {
+      console.log("error: " + error);
     },
     () => {
-      // default work when observable complete
+      // only prints when no error is thrown
       console.log("finished");
     }
   );
@@ -137,11 +222,11 @@ test = (function() {
       (result) => {
         console.log("rest result: " + result);
       },
-      (err) => {
-        console.log("error: " + err.message);
+      (error) => {
+        console.log("error: " + error);
       },
       () => {
-        // default work when observable complete
+        // only prints when no error is thrown
         console.log("finished");
       }
     );
@@ -156,11 +241,11 @@ test = (function() {
     (result) => {
       console.log("rest result: " + result);
     },
-    (err) => {
-      console.log("error: " + err.message);
+    (error) => {
+      console.log("error: " + error);
     },
     () => {
-      // default work when observable complete
+      // only prints when no error is thrown
       console.log("finished");
     }
   )
@@ -180,11 +265,11 @@ test = (function() {
         console.log("rest result: " + result);
       }
     },
-    (err) => {
-      console.log("error: " + err.message);
+    (error) => {
+      console.log("error: " + error);
     },
     () => {
-      // default work when observable complete
+      // only prints when no error is thrown
       console.log("finished");
     }
   )
@@ -217,60 +302,28 @@ test = (function() {
       }
     ).delay(2000); // simulate hard-delay 2s
   });
-  // loadModule().subscribe(
-  //   (component) => {
-  //     console.log(`store name: ${component.getStore().name}`);
-  //   }
-  // );
 
   let loadComponentFactory = (function() {
-    let $component = new Rx.BehaviorSubject(null);
-
-    console.log("initialization in progress ...");
-    loadModule().subscribe(
-      (component) => {
-        console.log("initialization completed successfully");
-        $component.next(component);
-      },
-      (error) => {
-        console.log("error");
-      },
-      () => {}
-    )
-
-    // let promise = new Promise(function(resolve, reject) {
-    //   console.log("initialization in progress ...");
-    //   // do the async operation here
-    //   let component = loadModule().toPromise();
-    //
-    //   if (component) { // result is successful
-    //     resolve(component);
-    //   } else {
-    //     reject(Error("error"));
-    //   }
-    // });
-    // promise.then(function(component) {
-    //   console.log("initialization completed successfully");
-    //   $component.next(component);
-    // }).catch(function(err) {
-    //   console.log("error: " + err.message);
-    // });
-
-    // return (function(i) {
-    //   console.log(`call: ${i}`);
-    //   let getComponent = (function() {
-    //     if ($component.getValue() == null) {
-    //       setTimeout(() => getComponent(), 100);
-    //     }
-    //   });
-    //   getComponent();
-    //
-    //   console.log(`return: ${i}`);
-    //   return $component.getValue();
-    // });
+    let $component = null;
 
     return (function(callerId) {
       console.log(`calling from: ${callerId}`);
+
+      if ($component == null) {
+        $component = new Rx.BehaviorSubject(null);
+        console.log("initialization in progress ...");
+        loadModule().subscribe(
+          (component) => {
+            console.log("initialization completed successfully");
+            $component.next(component);
+          },
+          (error) => {
+            console.log("error");
+          },
+          () => {}
+        )
+      }
+
       return Rx.Observable.create(
         (observer) => {
           $component.subscribe(
@@ -305,4 +358,4 @@ test = (function() {
   );
 
 });
-test.call();
+// test.call();

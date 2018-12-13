@@ -20,7 +20,7 @@ test = (function() {
   }
   console.log("iterated over sequence of size: " +  _map.size);
 });
-test.call();
+// test.call();
 
 test = (function() {
   let array = [];
@@ -90,11 +90,15 @@ test = (function() {
 // test.call();
 
 test = (function() {
-  let jsonString = "{\"1\":{\"id\":1,\"name\":\"test1\"}}";
+  // let jsonString = "{\"1\":{\"id\":1,\"name\":\"test1\"}}";
+  let jsonString = "{}"
   let obj = JSON.parse(jsonString);
+  console.log(`obj == null ? ${obj == null}`)
   console.log(Object.entries(obj));
 
   let map = new Map(Object.entries(obj));
+  console.log(`map == null ? ${map == null}`);
+  console.log(`map.size ? ${map.size}`);
 
   let iterator = map.values();
   var result = iterator.next();
@@ -104,4 +108,4 @@ test = (function() {
   }
   console.log("iterated over sequence of size: " +  map.size);
 });
-// test.call();
+test.call();

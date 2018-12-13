@@ -3,6 +3,17 @@
 
 let test;
 
+test= (function () {
+  var isoDate = new Date().toISOString();
+  console.log(isoDate);
+  console.log(typeof(isoDate));
+  
+  var _date = new Date(isoDate);
+  console.log(_date);
+  console.log(typeof(_date) == "object" ? _date.constructor.name:typeof(_date));
+})
+test.call();
+
 test = (function () {
   var isoDate = new Date().toISOString();
   console.log(isoDate);
@@ -14,6 +25,7 @@ test = (function () {
   console.log(timezoneOffset); // negative means behind UTC, so is inverted
 
   var _date = new Date(isoDate);
+  console.log(_date.toISOString());
   console.log(_date.getDate());
   console.log(_date.getHours());
   console.log(_date.getDate());
@@ -58,7 +70,7 @@ test = (function () {
   let result1 = (v2/1000 - v1/1000);
   console.log(result1);
   console.log(Math.round(result1));
-  
+
   let result2 = (v2 - v1)/1000;
   console.log(result2);
   console.log(Math.round(result2));
@@ -72,4 +84,4 @@ test = (function () {
   console.log(Math.round(result4));
 
 });
-test.call();
+// test.call();
