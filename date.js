@@ -7,12 +7,12 @@ test= (function () {
   var isoDate = new Date().toISOString();
   console.log(isoDate);
   console.log(typeof(isoDate));
-  
+
   var _date = new Date(isoDate);
   console.log(_date);
   console.log(typeof(_date) == "object" ? _date.constructor.name:typeof(_date));
 })
-test.call();
+// test.call();
 
 test = (function () {
   var isoDate = new Date().toISOString();
@@ -85,3 +85,14 @@ test = (function () {
 
 });
 // test.call();
+
+test = (function () {
+  let utcSystemDateTime = new Date().toISOString(); // local system current time
+  console.log(utcSystemDateTime);
+  console.log(new Date(utcSystemDateTime).getTime());
+
+  // plus 5 seconds elapsed time to the system current time
+  let utcStartDateTime = new Date(utcSystemDateTime).getTime() + (1000*5);
+  console.log(new Date(utcStartDateTime).toISOString());
+})
+test.call();

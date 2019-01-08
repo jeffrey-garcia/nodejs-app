@@ -44,8 +44,9 @@ test = (function() {
   map.set(1, Object.assign({},{id:1}));
   map.set(2, Object.assign({},{id:2}));
 
-  let array = [...map.entries()];
+  let array = [...map];
   console.log(array);
+  console.log(array.length);
 
   let _map = new Map(array);
   // console.log(_map);
@@ -107,5 +108,58 @@ test = (function() {
     result = iterator.next();
   }
   console.log("iterated over sequence of size: " +  map.size);
+});
+// test.call();
+
+test = (function() {
+  let map = new Map();
+  map.set("1",{id:"1"});
+  map.set("2",{id:"2"});
+  map.set("3",{id:"3"});
+  map.set("4",{id:"4"});
+  console.log(map.size);
+
+  let iterator = map.values();
+  var result = iterator.next();
+  while(!result.done) {
+    if (result.value.id == "2") {
+      map.delete("2")
+    }
+    result = iterator.next();
+  }
+
+  console.log(map.size);
+  console.log(map.values());
+});
+// test.call();
+
+test = (function() {
+  let map1 = new Map();
+  map1.set("1",{id:"1"});
+
+  let map2 = new Map();
+  map2.set("2",{id:"2"});
+
+  let map = new Map([...map1, ...map2]);
+  console.log(map.size);
+  console.log(map.values());
+});
+// test.call();
+
+test = (function() {
+  let map = new Map();
+  map.set("1",{id:"1",name:"name-1"});
+  map.set("2",{id:"2",name:null});
+  map.set("3",{id:null,name:"name-3"});
+  map.set(null,{id:"4",name:"name-4"});
+  console.log(map.size);
+
+  let filteredResult = [...map.entries()].filter(item => {
+    return (item[0]!=null && item[1]["id"]!=null && item[1]["name"]!=null);
+  });
+
+  let filteredMap = new Map(filteredResult);
+  console.log(filteredMap.size);
+  console.log(filteredMap.values());
 });
 test.call();

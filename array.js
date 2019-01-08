@@ -14,6 +14,35 @@ test = (function() {
 test = (function() {
   // defines the person object
   let Person = {
+    id: '',
+    name: '',
+    age: 0
+  };
+  // console.log(Person);
+
+  let p1 = Object.assign(Object.create(Person), {id:'1', name:'J', age:12, gender:'M'});
+  let p2 = Object.assign(Object.create({}), p1, {id:'2', name:'A', age:37}); // mixin
+  let p3 = Object.assign(Object.create({}), p1, {id:'3', name:'O', age:28}); // mixin
+
+  let array = [p1, p2, p3];
+  console.log(array);
+
+  // search for p2 element in array and remove it
+  let index = array.findIndex((item) => {
+    return item.id == '999';
+  });
+  console.log(`found index ${index}`);
+
+  if (index > -1) {
+    array.splice(index, 1);
+  }
+  console.log(array);
+})
+test.call();
+
+test = (function() {
+  // defines the person object
+  let Person = {
     name: '',
     age: 0
   };
@@ -101,7 +130,7 @@ test = (function() {
   array.pop();
   console.log(array);
 });
-test.call();
+// test.call();
 
 test = (function() {
   let array = [];
