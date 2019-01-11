@@ -9,6 +9,7 @@
   "author": "",
   "license": "ISC",
   "dependencies": {
+    "big.js": "^5.2.2",
     "rxjs": "^6.3.3",
     "rxjs-compat": "^6.3.3"
   },

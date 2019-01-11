@@ -82,9 +82,8 @@ test = (function () {
   let result4 = (v2 - v1)/(1000*60);
   console.log(result4);
   console.log(Math.round(result4));
-
 });
-// test.call();
+test.call();
 
 test = (function () {
   let utcSystemDateTime = new Date().toISOString(); // local system current time
@@ -95,4 +94,4 @@ test = (function () {
   let utcStartDateTime = new Date(utcSystemDateTime).getTime() + (1000*5);
   console.log(new Date(utcStartDateTime).toISOString());
 })
-test.call();
+// test.call();
