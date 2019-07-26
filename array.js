@@ -38,7 +38,7 @@ test = (function() {
   }
   console.log(array);
 })
-test.call();
+// test.call();
 
 test = (function() {
   // defines the person object
@@ -162,3 +162,30 @@ test = (function() {
   console.log(_map);
 });
 // test.call();
+
+test = (function() {
+  let array = [];
+
+  let lead = {
+    phone: [
+      {
+        phoneNumber: "123456"
+      },
+      {
+        name: "test"
+      },
+      {
+        phoneNumber: "333444"
+      },
+    ]
+  }
+  lead.phone.push({});
+  console.log(`lead phone: ${JSON.stringify(lead.phone)}`);
+
+  array = lead.phone.map((phone) => {
+    // console.log(`${phone.phoneNumber}`);
+    return phone["phoneNumber"];
+  })
+  console.log(`filtered phone array: ${array}`);
+});
+test.call();

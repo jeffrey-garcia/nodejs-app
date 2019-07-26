@@ -3,15 +3,29 @@
 
 // Import all core functionality
 const Rx = require('rxjs/Rx');
+const tap = require('rxjs/operators/tap').tap;
 
 const dummyRestApi = (function(i) {
   console.log("response data for " + i);
   return i;
 });
 
+const testError = (function() {
+  return Rx.Observable.throwError("An error has occurred!");
+});
+
 const dummyRestApiObservable = (function(i) {
   if (i <= 0) {
-    return Rx.Observable.throwError("An error has occurred!");
+    return Rx.Observable.throwError("An error has occurred!").pipe(
+      tap(
+        (response) => {
+          // intercept the response
+        },
+        (error) => {
+          // intercept the error
+        }
+      )
+    );
   } else {
     return Rx.Observable.of(dummyRestApi(i*2)).delay(i*1000);
   }
@@ -142,10 +156,14 @@ test = (function() {
 });
 // test.call();
 
+// execute multiple commands in sequentially and combine their results to an array
+// only the response data of the last executed command will be returned
+// if error occurs in any of the command, the error will be handled by the subscriber,
+// all the previous completed output will be lost
 test = (function() {
-  dummyRestApiObservable(0).concatMap(
+  dummyRestApiObservable(3).concatMap(
     (response) => {
-      return dummyRestApiObservable(2);
+      return dummyRestApiObservable(1);
     }
   ).subscribe(
     (result) => {
@@ -160,15 +178,15 @@ test = (function() {
     }
   )
 });
-test.call();
+// test.call();
 
 test = (function() {
-  const input1 = dummyRestApiObservable(2);
+  const input1 = dummyRestApiObservable(3);
   const input2 = dummyRestApiObservable(1);
 
   // execute multiple commands in parallel and combine their results to an array
   // note that order of the response data WILL be preserved
-  // if error occurs in any of the command, the error will NOT be handled by the subscriber,
+  // if error occurs in any of the command, the error will be handled by the subscriber,
   // all the previous completed output will be lost
   Rx.Observable.forkJoin(input1,input2)
   .subscribe(
@@ -184,7 +202,7 @@ test = (function() {
     }
   );
 });
-// test.call();
+test.call();
 
 test = (function() {
   const input1 = dummyRestApiObservable(1);
@@ -192,7 +210,7 @@ test = (function() {
 
   // execute multiple commands in parallel and combine their results to an array
   // note that order of the response data will NOT be preserved
-  // if error occurs in any of the command, the error will NOT be handled by the subscriber,
+  // if error occurs in any of the command, the error will be handled by the subscriber,
   // all the previous completed output will be lost
   Rx.Observable.combineLatest(input2, input1)
   .subscribe(
