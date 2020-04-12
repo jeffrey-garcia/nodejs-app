@@ -22,8 +22,9 @@ const testCase2 = () => {
     objectMap.key2 = { value: 'value2' };
 
     console.log(`${JSON.stringify(objectMap)}`);
-
-    objectMap
+    console.log(objectMap.hasOwnProperty('key1')); // should be true
+    console.log(objectMap['key1'] != null); // should be true
+    console.log(objectMap['key1']); // should be { value: 'value1' }
 };
 // testCase2();
 
@@ -135,18 +136,23 @@ const testCase6 = () => {
     console.log(JSON.stringify(objB)); // should be {"id":"2","age":30,"name":"John Doe","job":{"title":"Sales Manager","workYear":10,"company":"ABC"}}
     console.log(objB instanceof A); // should be true
     console.log(objB instanceof B); // should be true
+    console.log(A.prototype.isPrototypeOf(objB)); // should be true
     console.log(objB.constructor.name); // should be B
 
     let objC = Object.create(objB); // create a new object from another object, attributes are NOT copied!!!
     console.log(JSON.stringify(objC)); // should be {}
     console.log(objC instanceof A); // should be true
     console.log(objC instanceof B); // should be true
+    console.log(A.prototype.isPrototypeOf(objC)); // should be true
+    console.log(A.prototype.isPrototypeOf(objC)); // should be true
     console.log(objC.constructor.name); // should be B
 
     let objD = Object.assign(objB); // create a new object by deep cloning another object
     console.log(JSON.stringify(objD)); // {"id":"2","age":30,"name":"John Doe","job":{"title":"Sales Manager","workYear":10,"company":"ABC"}}
     console.log(objD instanceof A); // should be true
     console.log(objD instanceof B); // should be true
+    console.log(A.prototype.isPrototypeOf(objD)); // should be true
+    console.log(B.prototype.isPrototypeOf(objD)); // should be true
     console.log(objD.constructor.name); // should be B
 };
 testCase6();
