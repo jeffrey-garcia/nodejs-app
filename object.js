@@ -1,6 +1,9 @@
 // enforce use strict globally
 'use strict';
 
+// var assert = require('assert');
+var test = require( 'tape' ) ;
+
 const testCase1 = () => {
     var obj1 = {}; // create an empty object
     var obj2 = Object.create(null); // create an object with null as prototype
@@ -27,6 +30,10 @@ const testCase2 = () => {
     console.log(objectMap['key1']); // should be { value: 'value1' }
 };
 // testCase2();
+
+/**
+ * demonstrate Prototypo Inheritance
+ */
 
 const PremiumLevel = {
     GOLD: 'GOLD',
@@ -155,4 +162,45 @@ const testCase6 = () => {
     console.log(B.prototype.isPrototypeOf(objD)); // should be true
     console.log(objD.constructor.name); // should be B
 };
-testCase6();
+// testCase6();
+
+class C {
+    constructor() {
+        console.log(`invoking constructor of ${C.prototype.constructor.name}`);
+        this.education = {
+            unversity: '',
+            major: ''
+        }
+    }
+}
+
+test('Class Inheritance', assert => {
+    let objB = new B();
+    objB.id = '2';
+    objB.age = 30;
+    objB.name = 'John Doe';
+    objB.job = { title:'Sales Manager', workYear:10, company:'ABC' }
+
+    let objC = new C();
+    objC.education = { unversity:'Harvard', major:'BBA' }
+
+    var objD = Object.assign({}, objC, objB); // shallow copy, which unfortunately copy the reference instead of value for nested object
+    assert.equal(JSON.stringify(objD), '{"education":{"unversity":"Harvard","major":"BBA"},"id":"2","age":30,"name":"John Doe","job":{"title":"Sales Manager","workYear":10,"company":"ABC"}}');
+
+    objD.education.major = 'MBA';
+    assert.equal(objD instanceof A, false); // should be false
+    assert.equal(objD instanceof B, false); // should be false
+    assert.equal(objD instanceof C, false); // should be false
+
+    assert.equal(A.prototype.isPrototypeOf(objD), false); // would be false
+    assert.equal(B.prototype.isPrototypeOf(objD), false); // would be false
+    assert.equal(C.prototype.isPrototypeOf(objD), false); // would be false
+
+    // can only determine the instance type via comparing object keys
+    // D is an instance of B
+    assert.equal(Object.keys(objB).every(value => Object.keys(objD).includes(value)), true); // should be true
+    // D is also an instance of C
+    assert.equal(Object.keys(objC).every(value => Object.keys(objD).includes(value)), true); // should be true
+
+    assert.end();
+});
